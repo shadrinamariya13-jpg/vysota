@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#FAF4ED" />
+    <title>Кофе — таск-трекер</title>
+    <script>
+      // GitHub Pages SPA-фолбэк: при 404 редиректим на корень приложения
+      // и в sessionStorage кладём оригинальный путь — App.jsx восстановит его
+      // после загрузки React Router.
+      (function () {
+        var base = '/kofe-tracker/'
+        var l = window.location
+        sessionStorage.setItem(
+          'kofe-redirect',
+          l.pathname + l.search + l.hash
+        )
+        l.replace(base)
+      })()
+    </script>
+  </head>
+  <body>
+    Перенаправляем...
+  </body>
+</html>
