@@ -44,7 +44,7 @@ export default function Login() {
           <div className="w-14 h-14 rounded-xl2 bg-gold flex items-center justify-center shadow-gold mb-4">
             <Coffee className="w-7 h-7 text-white" strokeWidth={2.2} />
           </div>
-          <h1 className="font-display text-3xl text-coffee-dark">Кофе</h1>
+          <h1 className="font-display text-3xl text-coffee-dark">Высота</h1>
           <p className="text-coffee-mid text-sm mt-1">
             {mode === 'signin' ? 'С возвращением' : 'Создайте аккаунт'}
           </p>

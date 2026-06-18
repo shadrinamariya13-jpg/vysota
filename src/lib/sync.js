@@ -1,7 +1,7 @@
 import { db } from './db'
 import { supabase, cloudEnabled } from './supabase'
 
-const OUTBOX_KEY = 'kofe-outbox'
+const OUTBOX_KEY = 'vysota-outbox'
 let realtimeChannel = null
 
 // Видимый статус последнего pull — показывается в шапке.

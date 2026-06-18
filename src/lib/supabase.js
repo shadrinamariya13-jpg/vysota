@@ -13,7 +13,7 @@ export const supabase = url && key
         persistSession: true,
         autoRefreshToken: true,
         detectSessionInUrl: true,
-        storageKey: 'kofe-auth',
+        storageKey: 'vysota-auth',
       },
     })
   : null

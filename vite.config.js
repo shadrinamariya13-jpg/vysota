@@ -14,9 +14,9 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg', 'apple-touch-icon.png'],
       manifest: {
-        name: 'Кофе — таск-трекер',
-        short_name: 'Кофе',
-        description: 'Личные и рабочие задачи в кофейных тонах',
+        name: 'Высота — таск-трекер',
+        short_name: 'Высота',
+        description: 'Личные и рабочие задачи. Взгляд на жизнь с высоты.',
         theme_color: '#FAF4ED',
         background_color: '#FAF4ED',
         display: 'standalone',

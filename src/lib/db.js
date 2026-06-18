@@ -1,6 +1,6 @@
 import Dexie from 'dexie'
 
-export const db = new Dexie('kofe-tracker')
+export const db = new Dexie('vysota')
 
 // v1 — оригинальная схема
 db.version(1).stores({

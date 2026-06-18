@@ -75,7 +75,7 @@ export default function Layout() {
             <Coffee className="w-5 h-5 text-white" strokeWidth={2.2} />
           </div>
           <div>
-            <div className="font-display text-xl text-coffee-dark leading-none">Кофе</div>
+            <div className="font-display text-xl text-coffee-dark leading-none">Высота</div>
             <div className="text-xs text-coffee-mid mt-1">таск-трекер</div>
           </div>
         </div>
@@ -157,7 +157,7 @@ export default function Layout() {
             <div className="w-8 h-8 rounded-xl2 bg-gold flex items-center justify-center">
               <Coffee className="w-4 h-4 text-white" strokeWidth={2.2} />
             </div>
-            <span className="font-display text-lg text-coffee-dark">Кофе</span>
+            <span className="font-display text-lg text-coffee-dark">Высота</span>
           </div>
           <div className="flex items-center gap-1.5">
             {cloudEnabled && user && <SyncStatus compact />}

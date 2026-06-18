@@ -34,9 +34,9 @@ function AuthGate({ children }) {
 function RedirectRestorer() {
   const navigate = useNavigate()
   useEffect(() => {
-    const saved = sessionStorage.getItem('kofe-redirect')
+    const saved = sessionStorage.getItem('vysota-redirect')
     if (saved) {
-      sessionStorage.removeItem('kofe-redirect')
+      sessionStorage.removeItem('vysota-redirect')
       const base = import.meta.env.BASE_URL.replace(/\/$/, '')
       const rel = saved.startsWith(base) ? saved.slice(base.length) : saved
       if (rel && rel !== '/') navigate(rel, { replace: true })
