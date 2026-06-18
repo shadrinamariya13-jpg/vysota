@@ -14,6 +14,12 @@ export const supabase = url && key
         autoRefreshToken: true,
         detectSessionInUrl: true,
         storageKey: 'vysota-auth',
+        flowType: 'pkce',
+      },
+      global: {
+        // Явный fetch с omit credentials — Safari ITP не считает это
+        // cross-site tracking, потому что не отправляет кеки/cookies.
+        fetch: (input, init = {}) => fetch(input, { ...init, credentials: 'omit' }),
       },
     })
   : null

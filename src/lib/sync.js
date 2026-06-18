@@ -139,13 +139,25 @@ export async function pullAll(userId) {
     emitStatus({ lastError: 'Нет интернета' })
     return
   }
-  const { data, error } = await supabase
-    .from('tasks')
-    .select('*')
-    .eq('user_id', userId)
-  if (error) {
-    console.error('[sync] pull FAILED:', error.message)
-    emitStatus({ lastError: error.message })
+
+  // Ретраим до 3 раз — на iOS Safari fetch иногда падает первым запросом
+  // (race с активацией Service Worker / Network).
+  let lastErr = null
+  let data = null
+  for (let attempt = 0; attempt < 3; attempt++) {
+    const res = await supabase.from('tasks').select('*').eq('user_id', userId)
+    if (!res.error) {
+      data = res.data
+      lastErr = null
+      break
+    }
+    lastErr = res.error
+    console.warn(`[sync] pull attempt ${attempt + 1}/3 failed:`, res.error.message)
+    if (attempt < 2) await new Promise((r) => setTimeout(r, 500 * (attempt + 1)))
+  }
+  if (lastErr) {
+    console.error('[sync] pull FAILED after retries:', lastErr.message)
+    emitStatus({ lastError: lastErr.message })
     return
   }
   if (!data) {
