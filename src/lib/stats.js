@@ -8,6 +8,7 @@ import {
   parseISO,
   eachDayOfInterval,
 } from 'date-fns'
+import { ru } from 'date-fns/locale/ru'
 
 export function todayStr() {
   return format(new Date(), 'yyyy-MM-dd')
@@ -60,7 +61,7 @@ export function computeStats(tasks, period = 'week') {
     const completedOnDay = tasks.filter(
       (t) => t.completed_at && t.completed_at.slice(0, 10) === key
     ).length
-    return { date: key, label: format(d, 'EEEEEE'), count: completedOnDay }
+    return { date: key, label: format(d, 'EEEEEE', { locale: ru }), count: completedOnDay }
   })
 
   const percent = created === 0 ? null : Math.round((completed / Math.max(created, 1)) * 100)

@@ -20,10 +20,15 @@ export default function List() {
   const tasks = useAllTasks()
   const today = todayStr()
 
+  // Скрываем будущие копии повторяющихся задач в основных фильтрах
+  // (те же правила что в канбане): они появятся в свой день в "Сегодня"
+  const isFutureRepeat = (t) =>
+    t.parent_recurrence_id && t.due_date && t.due_date > today && t.status === 'todo'
+
   const filtered = tasks.filter((t) => {
-    if (filter === 'all') return t.status !== 'done'
-    if (filter === 'work') return t.category === 'work' && t.status !== 'done'
-    if (filter === 'personal') return t.category === 'personal' && t.status !== 'done'
+    if (filter === 'all') return t.status !== 'done' && !isFutureRepeat(t)
+    if (filter === 'work') return t.category === 'work' && t.status !== 'done' && !isFutureRepeat(t)
+    if (filter === 'personal') return t.category === 'personal' && t.status !== 'done' && !isFutureRepeat(t)
     if (filter === 'today') return t.due_date === today
     if (filter === 'overdue')
       return t.due_date && t.due_date < today && t.status !== 'done'

@@ -1,7 +1,15 @@
 import { useEffect, useRef, useState } from 'react'
 import { X, Trash2 } from 'lucide-react'
+import { addWeeks, addMonths, format } from 'date-fns'
 import { CATEGORIES, PRIORITIES, RECURRENCES, emptyTask } from '../lib/db'
 import { createTask, updateTask, deleteTask, deleteSeries } from '../hooks/useTasks'
+
+const RECURRENCE_END_PRESETS = [
+  { label: '2 недели', fn: (d) => addWeeks(d, 2) },
+  { label: '1 месяц', fn: (d) => addMonths(d, 1) },
+  { label: '3 месяца', fn: (d) => addMonths(d, 3) },
+  { label: '6 месяцев', fn: (d) => addMonths(d, 6) },
+]
 
 function buildInitial(initial) {
   if (initial && initial.id) return initial
@@ -215,7 +223,7 @@ export default function TaskForm({ initial, onClose }) {
               <select
                 className="input"
                 value={task.recurrence}
-                onChange={(e) => set({ recurrence: e.target.value })}
+                onChange={(e) => set({ recurrence: e.target.value, recurrence_end: null })}
               >
                 {RECURRENCES.map((r) => (
                   <option key={r.id} value={r.id}>
@@ -226,6 +234,45 @@ export default function TaskForm({ initial, onClose }) {
               {task.recurrence !== 'none' && !task.due_date && (
                 <p className="text-xs text-terracotta mt-1">
                   Не забудьте выбрать дату — повторы начнутся с неё
+                </p>
+              )}
+            </Field>
+          )}
+
+          {!isEdit && task.recurrence !== 'none' && (
+            <Field label="Повторять до...">
+              <div className="flex flex-wrap gap-2 mb-2">
+                {RECURRENCE_END_PRESETS.map((p) => {
+                  const base = task.due_date ? new Date(task.due_date) : new Date()
+                  const val = format(p.fn(base), 'yyyy-MM-dd')
+                  return (
+                    <button
+                      key={p.label}
+                      type="button"
+                      onClick={() => set({ recurrence_end: val })}
+                      className={chipClass(task.recurrence_end === val, 'bg-gold text-white border-gold')}
+                    >
+                      {p.label}
+                    </button>
+                  )
+                })}
+              </div>
+              <input
+                type="date"
+                className="input text-sm"
+                placeholder="Своя дата"
+                value={task.recurrence_end || ''}
+                min={task.due_date || undefined}
+                onChange={(e) => set({ recurrence_end: e.target.value || null })}
+              />
+              {!task.recurrence_end && (
+                <p className="text-xs text-coffee-light mt-1">
+                  Если не выбрать — создастся 90 копий вперёд
+                </p>
+              )}
+              {task.recurrence_end && (
+                <p className="text-xs text-olive mt-1">
+                  ✓ Повторы закончатся {new Date(task.recurrence_end).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })}
                 </p>
               )}
             </Field>
