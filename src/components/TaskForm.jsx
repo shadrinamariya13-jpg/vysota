@@ -199,6 +199,17 @@ export default function TaskForm({ initial, onClose }) {
             </Field>
           </div>
 
+          {task.due_date && (
+            <Field label="Напомнить (опц.)">
+              <input
+                type="datetime-local"
+                className="input"
+                value={task.reminder_at ? task.reminder_at.slice(0, 16) : ''}
+                onChange={(e) => set({ reminder_at: e.target.value ? `${e.target.value}:00` : null })}
+              />
+            </Field>
+          )}
+
           {!isEdit && (
             <Field label="Повторение">
               <select

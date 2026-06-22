@@ -12,6 +12,7 @@ import {
   Wifi,
   WifiOff,
   RefreshCw,
+  Settings,
 } from 'lucide-react'
 import { useTaskForm } from './TaskFormContext'
 import { useAuth } from '../hooks/useAuth'
@@ -25,6 +26,7 @@ const navItems = [
   { to: '/list', label: 'Список', icon: ListChecks },
   { to: '/calendar', label: 'Календарь', icon: CalendarDays },
   { to: '/stats', label: 'Итоги', icon: BarChart3 },
+  { to: '/settings', label: 'Настройки', icon: Settings },
 ]
 
 function useOnline() {

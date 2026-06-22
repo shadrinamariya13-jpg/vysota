@@ -5,12 +5,16 @@ import { TaskFormProvider } from './components/TaskFormContext'
 import { AuthProvider, useAuth } from './hooks/useAuth'
 import { cloudEnabled } from './lib/supabase'
 import { initialSync, subscribeRealtime, flushOutbox, clearLocal, pullAll } from './lib/sync'
+import { requestPermission, scheduleReminders, cancelAll } from './lib/notifications'
+import { useLiveQuery } from 'dexie-react-hooks'
+import { db } from './lib/db'
 import Login from './pages/Login'
 import Today from './pages/Today'
 import Kanban from './pages/Kanban'
 import List from './pages/List'
 import Calendar from './pages/Calendar'
 import Stats from './pages/Stats'
+import Settings from './pages/Settings'
 
 function AuthGate({ children }) {
   const { user, loading } = useAuth()
@@ -89,6 +93,21 @@ function SyncRunner() {
   return null
 }
 
+// Подписываемся на задачи и пересчитываем расписание уведомлений.
+function NotificationScheduler() {
+  const { user } = useAuth()
+  const tasks = useLiveQuery(() => db.tasks.toArray(), [], [])
+
+  useEffect(() => {
+    if (!user) { cancelAll(); return }
+    requestPermission().then((granted) => {
+      if (granted) scheduleReminders(tasks)
+    })
+  }, [tasks, user])
+
+  return null
+}
+
 function ClearOnSignOut() {
   // Если облако включено и пользователь вышел — очищаем локальные данные,
   // чтобы при следующем логине другой пользователь не увидел чужие задачи.
@@ -112,6 +131,7 @@ export default function App() {
       <AuthProvider>
         <RedirectRestorer />
         <SyncRunner />
+        <NotificationScheduler />
         <ClearOnSignOut />
         <TaskFormProvider>
           <Routes>
@@ -129,6 +149,7 @@ export default function App() {
               <Route path="/list" element={<List />} />
               <Route path="/calendar" element={<Calendar />} />
               <Route path="/stats" element={<Stats />} />
+              <Route path="/settings" element={<Settings />} />
               <Route path="*" element={<Navigate to="/today" replace />} />
             </Route>
           </Routes>
