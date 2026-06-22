@@ -184,9 +184,18 @@ export async function pullAll(userId) {
     console.log('[sync] pulled', data.length, '— нечего применять')
   }
 
-  // НЕ удаляем локальные задачи, которых нет в облаке —
-  // это могла быть только что созданная и не успевшая улететь задача.
-  // Реальные удаления приходят через realtime DELETE-события и явные deleteTask.
+  // Удаляем локальные задачи которых нет в облаке,
+  // НО только если их updated_at старше 60 секунд —
+  // иначе снесём только что созданную задачу которая ещё не улетела.
+  const cutoff = new Date(Date.now() - 60_000).toISOString()
+  const remoteIds = new Set(data.map((t) => t.id))
+  const toDelete = local
+    .filter((t) => t.user_id === userId && !remoteIds.has(t.id) && t.updated_at < cutoff)
+    .map((t) => t.id)
+  if (toDelete.length) {
+    await db.tasks.bulkDelete(toDelete)
+    console.log('[sync] removed', toDelete.length, 'stale local tasks')
+  }
 }
 
 export function subscribeRealtime(userId, onChange) {
