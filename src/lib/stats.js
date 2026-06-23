@@ -8,7 +8,7 @@ import {
   parseISO,
   eachDayOfInterval,
 } from 'date-fns'
-import { ru } from 'date-fns/locale/ru'
+import { ru } from 'date-fns/locale'
 
 export function todayStr() {
   return format(new Date(), 'yyyy-MM-dd')
