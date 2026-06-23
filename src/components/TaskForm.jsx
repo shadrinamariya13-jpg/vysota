@@ -4,6 +4,16 @@ import { addWeeks, addMonths, format } from 'date-fns'
 import { CATEGORIES, PRIORITIES, RECURRENCES, emptyTask } from '../lib/db'
 import { createTask, updateTask, deleteTask, deleteSeries } from '../hooks/useTasks'
 
+// Разбирает reminder_at: может быть JSON-массив "[30,5]" или старый ISO-формат
+export function parseReminderMinutes(reminderAt) {
+  if (!reminderAt) return []
+  try {
+    const parsed = JSON.parse(reminderAt)
+    if (Array.isArray(parsed)) return parsed
+  } catch {}
+  return [] // старый ISO-формат игнорируем
+}
+
 const RECURRENCE_END_PRESETS = [
   { label: '2 недели', fn: (d) => addWeeks(d, 2) },
   { label: '1 месяц', fn: (d) => addMonths(d, 1) },
@@ -207,14 +217,35 @@ export default function TaskForm({ initial, onClose }) {
             </Field>
           </div>
 
-          {task.due_date && (
-            <Field label="Напомнить (опц.)">
-              <input
-                type="datetime-local"
-                className="input"
-                value={task.reminder_at ? task.reminder_at.slice(0, 16) : ''}
-                onChange={(e) => set({ reminder_at: e.target.value ? `${e.target.value}:00` : null })}
-              />
+          {task.start_time && (
+            <Field label="Напомнить до начала">
+              <div className="flex flex-wrap gap-2">
+                {[5, 10, 30, 60].map((mins) => {
+                  const selected = parseReminderMinutes(task.reminder_at)
+                  const isActive = selected.includes(mins)
+                  return (
+                    <button
+                      key={mins}
+                      type="button"
+                      onClick={() => {
+                        const current = parseReminderMinutes(task.reminder_at)
+                        const next = isActive
+                          ? current.filter((m) => m !== mins)
+                          : [...current, mins].sort((a, b) => b - a)
+                        set({ reminder_at: next.length ? JSON.stringify(next) : null })
+                      }}
+                      className={chipClass(isActive, 'bg-gold text-white border-gold')}
+                    >
+                      {mins < 60 ? `${mins} мин` : '1 час'}
+                    </button>
+                  )
+                })}
+              </div>
+              {parseReminderMinutes(task.reminder_at).length > 0 && (
+                <p className="text-xs text-olive mt-1.5">
+                  ✓ Напоминание придёт за {parseReminderMinutes(task.reminder_at).map(m => m < 60 ? `${m} мин` : '1 час').join(' и ')}
+                </p>
+              )}
             </Field>
           )}
 

@@ -94,15 +94,17 @@ export default function Calendar() {
           </div>
         </div>
 
-        <div className="grid grid-cols-7 gap-1 mb-2">
+        {/* Заголовки дней недели */}
+        <div className="grid grid-cols-7 gap-1 mb-3">
           {WEEK_DAYS.map((d) => (
-            <div key={d} className="text-center text-xs font-medium text-coffee-light py-1">
+            <div key={d} className="text-center text-[11px] font-display font-medium text-coffee-mid py-1 tracking-wide">
               {d}
             </div>
           ))}
         </div>
 
-        <div className="grid grid-cols-7 gap-1">
+        {/* Ячейки дней */}
+        <div className="grid grid-cols-7 gap-1.5">
           {days.map((d, i) => {
             if (d === null) return <div key={i} className="aspect-square" />
             const key = dateKey(cursor.year, cursor.month, d)
@@ -111,32 +113,31 @@ export default function Calendar() {
             const dayTasks = byDate.get(key) || []
             const hasWork = dayTasks.some((t) => t.category === 'work')
             const hasPersonal = dayTasks.some((t) => t.category === 'personal')
+            const isWeekend = new Date(cursor.year, cursor.month, d).getDay() % 6 === 0
 
             return (
               <button
                 key={i}
                 onClick={() => setSelected(key)}
                 className={[
-                  'aspect-square rounded-xl2 flex flex-col items-center justify-center p-1 text-sm border transition',
+                  'aspect-square rounded-xl2 flex flex-col items-center justify-center transition-all',
                   isSelected
-                    ? 'bg-gold text-white border-gold shadow-gold'
+                    ? 'bg-gold text-white shadow-gold scale-105'
                     : isToday
-                      ? 'bg-gold/15 border-gold/40 text-coffee-dark font-semibold'
-                      : 'bg-cream-bg border-cream-border text-coffee-mid hover:bg-cream-deep',
+                      ? 'ring-2 ring-gold/50 text-gold font-semibold bg-cream-surface'
+                      : isWeekend
+                        ? 'text-coffee-light bg-cream-bg hover:bg-cream-deep'
+                        : 'text-coffee-dark bg-cream-bg hover:bg-cream-deep',
                 ].join(' ')}
               >
-                <span>{d}</span>
+                <span className="font-display text-sm leading-none">{d}</span>
                 {dayTasks.length > 0 && (
-                  <span className="flex gap-0.5 mt-0.5">
+                  <span className="flex gap-0.5 mt-1">
                     {hasWork && (
-                      <span
-                        className={`w-1 h-1 rounded-full ${isSelected ? 'bg-white' : 'bg-olive'}`}
-                      />
+                      <span className={`w-1 h-1 rounded-full ${isSelected ? 'bg-white/80' : 'bg-olive'}`} />
                     )}
                     {hasPersonal && (
-                      <span
-                        className={`w-1 h-1 rounded-full ${isSelected ? 'bg-white' : 'bg-terracotta'}`}
-                      />
+                      <span className={`w-1 h-1 rounded-full ${isSelected ? 'bg-white/80' : 'bg-terracotta'}`} />
                     )}
                   </span>
                 )}

@@ -15,7 +15,11 @@ function priorityDot(p) {
 
 function formatTime(iso) {
   if (!iso) return null
-  return new Date(iso).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })
+  // Извлекаем HH:MM прямо из строки — не через new Date() —
+  // иначе Safari на iPhone трактует строку без часового пояса как UTC
+  // и прибавляет смещение (UTC+5 → +5 часов).
+  const match = iso.match(/T(\d{2}):(\d{2})/)
+  return match ? `${match[1]}:${match[2]}` : null
 }
 
 export default function TaskCard({ task, compact = false }) {
