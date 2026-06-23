@@ -49,8 +49,10 @@ export default defineConfig({
         skipWaiting: true,
         clientsClaim: true,
         cleanupOutdatedCaches: true,
-        navigateFallback: `${base}index.html`.replace('//', '/'),
-        globPatterns: ['**/*.{js,css,html,svg,png,ico,woff,woff2}'],
+        // HTML не кешируем — всегда грузим свежий с сервера.
+        // Это исключает проблему "белый экран после обновления" на iOS Safari.
+        navigateFallback: null,
+        globPatterns: ['**/*.{js,css,svg,png,ico,woff,woff2}'],
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
