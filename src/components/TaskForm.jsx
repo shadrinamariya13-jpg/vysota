@@ -217,6 +217,12 @@ export default function TaskForm({ initial, onClose }) {
             </Field>
           </div>
 
+          {task.due_date && !task.start_time && (
+            <p className="text-xs text-coffee-light -mt-1">
+              💡 Укажи время — появится кнопка напоминания
+            </p>
+          )}
+
           {task.start_time && (
             <Field label="Напомнить до начала">
               <div className="flex flex-wrap gap-2">

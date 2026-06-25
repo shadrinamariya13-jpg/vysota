@@ -24,10 +24,11 @@ function showNotification(task, minsLeft) {
   const body = minsLeft === 0
     ? task.title
     : `через ${minsLeft < 60 ? `${minsLeft} мин` : '1 час'} — ${task.title}`
+  const iconUrl = `${import.meta.env.BASE_URL}icons/icon-192.png`.replace('//', '/')
   const n = new Notification('Высота', {
     body,
-    icon: '/icons/icon-192.png',
-    badge: '/icons/icon-192.png',
+    icon: iconUrl,
+    badge: iconUrl,
     tag: `task-${task.id}-${minsLeft}`,
     renotify: true,
   })
@@ -52,7 +53,12 @@ export function scheduleReminders(tasks) {
     const offsets = parseOffsets(task.reminder_at)
     if (offsets.length === 0) continue
 
-    const startMs = new Date(task.start_time).getTime()
+    // Парсим время без new Date() — Safari трактует строку без TZ как UTC
+    // и даёт неправильный timestamp. Берём дату и время напрямую из строки.
+    const [datePart, timePart] = task.start_time.split('T')
+    const [year, month, day] = datePart.split('-').map(Number)
+    const [hour, minute] = (timePart || '00:00').split(':').map(Number)
+    const startMs = new Date(year, month - 1, day, hour, minute, 0).getTime()
 
     for (const mins of offsets) {
       const key = `${task.id}-${mins}`

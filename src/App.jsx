@@ -5,7 +5,7 @@ import { TaskFormProvider } from './components/TaskFormContext'
 import { AuthProvider, useAuth } from './hooks/useAuth'
 import { cloudEnabled } from './lib/supabase'
 import { initialSync, subscribeRealtime, flushOutbox, clearLocal, pullAll } from './lib/sync'
-import { requestPermission, scheduleReminders, cancelAll } from './lib/notifications'
+import { scheduleReminders, cancelAll, hasPermission } from './lib/notifications'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { db } from './lib/db'
 import Login from './pages/Login'
@@ -100,9 +100,9 @@ function NotificationScheduler() {
 
   useEffect(() => {
     if (!user) { cancelAll(); return }
-    requestPermission().then((granted) => {
-      if (granted) scheduleReminders(tasks)
-    })
+    // Не запрашиваем разрешение автоматически — iOS требует явного тапа.
+    // Просто планируем если разрешение уже выдано.
+    if (hasPermission()) scheduleReminders(tasks)
   }, [tasks, user])
 
   return null
