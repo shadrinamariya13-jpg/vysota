@@ -14,5 +14,36 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
+    <script>
+      // Авто-обновление: при каждом открытии проверяем версию на сервере.
+      // Если версия изменилась — сбрасываем кеш SW и перезагружаемся.
+      (function() {
+        var vurl = location.pathname.replace(/[^/]*$/, '') + 'version.json?t=' + Date.now();
+        var stored = localStorage.getItem('vysota-version');
+        fetch(vurl, { cache: 'no-store' })
+          .then(function(r) { return r.json(); })
+          .then(function(data) {
+            var v = data && data.v;
+            if (!v) return;
+            if (stored && stored !== v) {
+              localStorage.setItem('vysota-version', v);
+              if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.getRegistrations().then(function(regs) {
+                  var ps = regs.map(function(r) { return r.unregister(); });
+                  Promise.all(ps).then(function() {
+                    return caches.keys();
+                  }).then(function(keys) {
+                    return Promise.all(keys.map(function(k) { return caches.delete(k); }));
+                  }).then(function() { location.reload(); });
+                });
+              } else {
+                location.reload();
+              }
+            } else {
+              localStorage.setItem('vysota-version', v);
+            }
+          }).catch(function() {});
+      })();
+    </script>
   </body>
 </html>

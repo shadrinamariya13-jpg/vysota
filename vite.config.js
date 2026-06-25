@@ -1,8 +1,20 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
-import { readFileSync } from 'fs'
-const pkg = JSON.parse(readFileSync('./package.json', 'utf-8'))
+import { writeFileSync } from 'fs'
+import { resolve } from 'path'
+
+// Плагин: записывает version.json в dist/ при каждой сборке.
+// Это позволяет клиенту обнаружить что вышла новая версия.
+function versionPlugin() {
+  return {
+    name: 'write-version',
+    closeBundle() {
+      const v = new Date().toISOString()
+      writeFileSync(resolve('dist/version.json'), JSON.stringify({ v }))
+    }
+  }
+}
 
 // На GitHub Pages приложение живёт под /kofe-tracker/ — это передаётся
 // в build через VITE_BASE env (см. workflow). В деве работаем из корня.
@@ -15,6 +27,7 @@ export default defineConfig({
   },
   plugins: [
     react(),
+    versionPlugin(),
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg', 'apple-touch-icon.png'],
