@@ -109,12 +109,13 @@ function NotificationScheduler() {
 }
 
 function ClearOnSignOut() {
-  // Если облако включено и пользователь вышел — очищаем локальные данные,
-  // чтобы при следующем логине другой пользователь не увидел чужие задачи.
   const { user, loading } = useAuth()
   useEffect(() => {
     if (!cloudEnabled) return
-    if (!loading && !user) {
+    // Очищаем только при ЯВНОМ выходе (SIGNED_OUT event),
+    // НЕ при временной потере сессии во время обновления токена.
+    if (!loading && !user && window.__vysotaSignedOut) {
+      window.__vysotaSignedOut = false
       clearLocal()
     }
   }, [user, loading])

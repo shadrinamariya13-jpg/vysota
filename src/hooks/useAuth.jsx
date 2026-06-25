@@ -22,9 +22,14 @@ export function AuthProvider({ children }) {
       setLoading(false)
     })
 
-    const { data: sub } = supabase.auth.onAuthStateChange((_event, s) => {
+    const { data: sub } = supabase.auth.onAuthStateChange((event, s) => {
       setSession(s)
       setCurrentUserId(s?.user?.id || null)
+      // Сохраняем событие чтобы ClearOnSignOut знал — это явный выход,
+      // а не временная потеря сессии при обновлении токена.
+      if (event === 'SIGNED_OUT') {
+        window.__vysotaSignedOut = true
+      }
     })
 
     return () => {
