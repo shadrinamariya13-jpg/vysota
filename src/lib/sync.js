@@ -9,6 +9,7 @@ const statusListeners = new Set()
 const syncStatus = {
   lastPullCount: null,
   lastError: null,
+  lastWriteError: null,
   lastPullAt: null,
 }
 export function getSyncStatus() {
@@ -79,9 +80,11 @@ export async function remoteUpsert(task, userId) {
   const { error } = await supabase.from('tasks').upsert(row)
   if (error) {
     console.error('[sync] upsert FAILED', error.message, error)
+    emitStatus({ lastWriteError: error.message })
     pushOutbox({ type: 'upsert', task: row })
   } else {
     console.log('[sync] upsert OK', task.id, task.title)
+    emitStatus({ lastWriteError: null })
   }
 }
 
