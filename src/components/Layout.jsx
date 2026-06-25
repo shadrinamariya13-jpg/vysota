@@ -78,7 +78,7 @@ export default function Layout() {
           </div>
           <div>
             <div className="font-display text-xl text-coffee-dark leading-none">Высота</div>
-            <div className="text-xs text-coffee-mid mt-1">таск-трекер</div>
+            <div className="text-xs text-coffee-mid mt-1">таск-трекер · v{__APP_VERSION__}</div>
           </div>
         </div>
 

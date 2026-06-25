@@ -77,8 +77,8 @@ function SyncRunner() {
     }
     document.addEventListener('visibilitychange', onVisibility)
 
-    // Периодически (каждые 30 сек) — на случай если ничего не сработало
-    const interval = setInterval(refresh, 30_000)
+    // Периодически (каждые 10 сек) — быстрая страховка если realtime упал
+    const interval = setInterval(refresh, 10_000)
 
     return () => {
       cancelled = true

@@ -1,6 +1,8 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
+import { readFileSync } from 'fs'
+const pkg = JSON.parse(readFileSync('./package.json', 'utf-8'))
 
 // На GitHub Pages приложение живёт под /kofe-tracker/ — это передаётся
 // в build через VITE_BASE env (см. workflow). В деве работаем из корня.
@@ -8,6 +10,9 @@ const base = process.env.VITE_BASE || '/'
 
 export default defineConfig({
   base,
+  define: {
+    __APP_VERSION__: JSON.stringify(new Date().toISOString().slice(0, 16).replace('T', ' ')),
+  },
   plugins: [
     react(),
     VitePWA({
