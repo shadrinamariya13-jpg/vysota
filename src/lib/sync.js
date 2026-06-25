@@ -184,18 +184,12 @@ export async function pullAll(userId) {
     console.log('[sync] pulled', data.length, '— нечего применять')
   }
 
-  // Удаляем локальные задачи которых нет в облаке,
-  // НО только если их updated_at старше 60 секунд —
-  // иначе снесём только что созданную задачу которая ещё не улетела.
-  const cutoff = new Date(Date.now() - 60_000).toISOString()
-  const remoteIds = new Set(data.map((t) => t.id))
-  const toDelete = local
-    .filter((t) => t.user_id === userId && !remoteIds.has(t.id) && t.updated_at < cutoff)
-    .map((t) => t.id)
-  if (toDelete.length) {
-    await db.tasks.bulkDelete(toDelete)
-    console.log('[sync] removed', toDelete.length, 'stale local tasks')
-  }
+  // Локальные задачи которых нет в облаке — НЕ удаляем.
+  // Причина: задача могла быть только что создана и ещё не долетела до Supabase,
+  // или remoteUpsert упал и задача лежит в outbox.
+  // Удаление задач происходит только через:
+  //   1. Явный deleteTask() — пользователь нажал "Удалить"
+  //   2. Realtime DELETE-событие от Supabase
 }
 
 export function subscribeRealtime(userId, onChange) {
